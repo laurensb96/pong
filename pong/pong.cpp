@@ -23,7 +23,7 @@ void Button::setPosition(sf::Vector2f pos)
     buttonBounds = this->button.getGlobalBounds();
     textBounds = this->text.getGlobalBounds();
     textX = buttonBounds.left + buttonBounds.width/2 - textBounds.width/2;
-    textY = buttonBounds.top + buttonBounds.height/2 - textBounds.height/2;
+    textY = buttonBounds.top + buttonBounds.height/2 - 20.f;
     this->text.setPosition(textX, textY);
 }
 

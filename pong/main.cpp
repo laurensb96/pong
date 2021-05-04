@@ -21,7 +21,7 @@ int main()
     sf::CircleShape ball(BALL_RADIUS);
 
     sf::Font font;
-    if (!font.loadFromFile("calibri.ttf"))
+    if (!font.loadFromFile("Roboto-Regular.ttf"))
     {
         // error...
     }
