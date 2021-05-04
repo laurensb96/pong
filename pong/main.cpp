@@ -14,6 +14,7 @@ int checkCollision(sf::RectangleShape *r, sf::CircleShape *b, sf::Vector2f *velo
 void moveBall(sf::CircleShape *b, sf::Vector2f velocity);
 void movePlayer(sf::RectangleShape *racket, int dir);
 void moveNPC(sf::RectangleShape *r, sf::CircleShape *c);
+int gameMenu(sf::RenderWindow *w, int *score);
 
 int main()
 {
@@ -44,6 +45,9 @@ int main()
     scoreText[0].setPosition(300.f, 20.f);
     scoreText[1].setPosition(500.f, 20.f);
 
+    sf::Text gameText;
+    sf::FloatRect gameTextBounds;
+
     newRound(racket, &ball, &ballVelocity, scoreText, score);
 
     t = clock();
@@ -54,24 +58,21 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
-        }
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-        {
-            playerDir = -1;
-        }
-        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-        {
-            playerDir = 1;
-        }
-        else
-        {
-            playerDir = 0;
+            
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+                playerDir = -1;
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+                playerDir = 1;
+            else
+                playerDir = 0;
         }
 
         if((float)((clock() - t))/CLOCKS_PER_SEC > 0.02f)
         {
-            if(checkCollision(racket, &ball, &ballVelocity, score) != 0) newRound(racket, &ball, &ballVelocity, scoreText, score);
+            if(checkCollision(racket, &ball, &ballVelocity, score) != 0) 
+            {
+                newRound(racket, &ball, &ballVelocity, scoreText, score);
+            }
             moveBall(&ball, ballVelocity);
             movePlayer(racket, playerDir);
             moveNPC(racket, &ball);
@@ -82,7 +83,39 @@ int main()
                 window.draw(scoreText[i]);
             }
             window.draw(ball);
-            window.display();
+            if(score[0] == 10)
+            {
+                // PLAYER WINS
+                gameText.setFont(font);
+                gameText.setCharacterSize(48);
+                gameText.setString("VICTORY");
+                gameTextBounds = gameText.getGlobalBounds();
+                gameText.setPosition(400.f-gameTextBounds.width/2, 200.f-gameTextBounds.height/2);
+                window.draw(gameText);
+                window.display();
+                if(gameMenu(&window, score) == 0)
+                    break;
+                else
+                    newRound(racket, &ball, &ballVelocity, scoreText, score);
+            }
+            else if(score[1] == 10)
+            {
+                // NPC WINS
+                gameText.setFont(font);
+                gameText.setCharacterSize(48);
+                gameText.setString("GAME OVER");
+                gameTextBounds = gameText.getGlobalBounds();
+                gameText.setPosition(400.f-gameTextBounds.width/2, 200.f-gameTextBounds.height/2);
+                window.draw(gameText);
+                window.display();
+                if(gameMenu(&window, score) == 0)
+                    break;
+                else
+                    newRound(racket, &ball, &ballVelocity, scoreText, score);
+            }
+            else
+                window.display();
+            
             t = clock();
         }
     }
@@ -161,4 +194,23 @@ void moveNPC(sf::RectangleShape *r, sf::CircleShape *b)
     if(npcPos.y > ballPos.y) r[1].move(0.f, -5.f);
     else if(npcPos.y < ballPos.y) r[1].move(0.f, 5.f);
     else r[1].move(0.f, 0.f);
+}
+
+int gameMenu(sf::RenderWindow *w, int *score)
+{
+    while(1)
+    {
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+        {
+            for(int i = 0; i < NUM_OF_RACKETS; i++)
+            {
+                score[i] = 0;
+            }
+            return 1;
+        }
+        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+        {
+            return 0;
+        }
+    }
 }
