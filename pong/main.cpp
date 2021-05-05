@@ -2,7 +2,7 @@
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(800, 600), "Pong");
+    sf::RenderWindow window(sf::VideoMode((int) WINDOW_WIDTH, (int) WINDOW_HEIGHT), "Pong");
 
     clock_t t;
     int playerDir;
@@ -13,8 +13,8 @@ int main()
 
     pongState = play;
 
-    sf::RectangleShape racket[NUM_OF_RACKETS];
-    for (int i = 0; i < NUM_OF_RACKETS; i++)
+    sf::RectangleShape racket[NUM_OF_PLAYERS];
+    for (int i = 0; i < NUM_OF_PLAYERS; i++)
     {
         racket[i] = sf::RectangleShape(sf::Vector2f(RACKET_WIDTH, RACKET_LENGTH));
     }
@@ -26,25 +26,27 @@ int main()
         // error...
     }
     sf::Text scoreText[2];
-    for (int i = 0; i < NUM_OF_RACKETS; i++)
+    sf::FloatRect bounds;
+    for (int i = 0; i < NUM_OF_PLAYERS; i++)
     {
         scoreText[i].setFont(font);
         score[i] = 0;
     }
-    scoreText[0].setPosition(300.f, 20.f);
-    scoreText[1].setPosition(500.f, 20.f);
+
+    newRound(racket, &ball, &ballVelocity, scoreText, score);
+    bounds = scoreText[0].getGlobalBounds();
+    scoreText[0].setPosition(WINDOW_WIDTH/2-100.f-bounds.width/2, 20.f);
+    scoreText[1].setPosition(WINDOW_WIDTH/2+100.f-bounds.width/2, 20.f);
 
     sf::Text menuText;
 
     Button quitButton("QUIT", &font);
     Button replayButton("PLAY AGAIN", &font);
-    quitButton.setPosition(sf::Vector2f(100, 300));
-    replayButton.setPosition(sf::Vector2f(500, 300));
+    quitButton.setPosition(sf::Vector2f(100.f, WINDOW_HEIGHT/2));
+    replayButton.setPosition(sf::Vector2f(500.f, WINDOW_HEIGHT/2));
 
     menuText.setFont(font);
     menuText.setCharacterSize(48);
-
-    newRound(racket, &ball, &ballVelocity, scoreText, score);
 
     t = clock();
     while (window.isOpen())
@@ -83,7 +85,7 @@ int main()
                 mousePosition = sf::Mouse::getPosition(window);
                 if(replayButton.clicked(mousePosition))
                 {
-                    for (int i = 0; i < NUM_OF_RACKETS; i++)
+                    for (int i = 0; i < NUM_OF_PLAYERS; i++)
                     {
                         score[i] = 0;
                     }
@@ -95,7 +97,7 @@ int main()
 
         if((float)((clock() - t))/CLOCKS_PER_SEC > 0.02f)
         {
-            if (score[0] >= 2 || score[1] >= 2)
+            if (score[0] >= 5 || score[1] >= 5)
             {
                 pongState = pause;
                 if(score[0] >= 2) menuText.setString("GAME WON");
@@ -104,7 +106,7 @@ int main()
                 if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) break;
                 else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
                 {
-                    for (int i = 0; i < NUM_OF_RACKETS; i++)
+                    for (int i = 0; i < NUM_OF_PLAYERS; i++)
                     {
                         score[i] = 0;
                     }
@@ -123,7 +125,7 @@ int main()
                 moveNPC(racket, &ball);
             }
             window.clear();
-            for (int i = 0; i < NUM_OF_RACKETS; i++)
+            for (int i = 0; i < NUM_OF_PLAYERS; i++)
             {
                 window.draw(racket[i]);
                 window.draw(scoreText[i]);

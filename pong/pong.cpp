@@ -39,9 +39,9 @@ void newRound(sf::RectangleShape *r, sf::CircleShape *b, sf::Vector2f *velocity,
 {
     r[0].setPosition(sf::Vector2f(15.f, 300.f-RACKET_LENGTH/2));
     r[1].setPosition(sf::Vector2f(785.f-RACKET_WIDTH, 300.f-RACKET_LENGTH/2));
-    b->setPosition(400.f, 500.f);
+    b->setPosition(WINDOW_WIDTH/2-BALL_RADIUS, WINDOW_HEIGHT/2-BALL_RADIUS);
     *velocity = sf::Vector2f(8.f, (float) ((rand() % 1000) / 200 - 2.5f));
-    for (int i = 0; i < NUM_OF_RACKETS; i++)
+    for (int i = 0; i < NUM_OF_PLAYERS; i++)
     {
         t[i].setString(std::to_string(score[i]));
     }
@@ -60,11 +60,6 @@ int checkCollision(sf::RectangleShape *r, sf::CircleShape *b, sf::Vector2f *velo
         {
             *velocity = sf::Vector2f(8.f, ((ballPos.y + BALL_RADIUS) - (playerPos.y + RACKET_LENGTH/2))/10.f);
         }
-        else
-        {
-            score[1]++;
-            return 1;
-        }
     }
     else if((ballPos.x + 2*BALL_RADIUS) >= npcPos.x)
     {
@@ -72,14 +67,20 @@ int checkCollision(sf::RectangleShape *r, sf::CircleShape *b, sf::Vector2f *velo
         {
             *velocity = sf::Vector2f(-8.f, ((ballPos.y + BALL_RADIUS) - (npcPos.y + RACKET_LENGTH/2))/10.f);
         }
-        else
-        {
-            score[0]++;
-            return 1;
-        }
     }
 
-    if(ballPos.y <= 0.f || (ballPos.y + 2*BALL_RADIUS) >= 600.f)
+    if((ballPos.x + 2*BALL_RADIUS) <= 0.f)
+    {
+        score[1]++;
+        return 1;
+    }
+    else if(ballPos.x >= WINDOW_WIDTH)
+    {
+        score[0]++;
+        return 1;
+    }
+
+    if(ballPos.y <= 0.f || (ballPos.y + 2*BALL_RADIUS) >= WINDOW_HEIGHT)
     {
         velocity->y = -velocity->y;
     }
@@ -112,5 +113,5 @@ void gameMenu(sf::Text *t, sf::RenderWindow *w, sf::Event *e, int *score)
 {
     sf::FloatRect bounds;
     bounds = t->getGlobalBounds();
-    t->setPosition(400.f-bounds.width/2, 200.f-bounds.height/2);
+    t->setPosition(WINDOW_WIDTH/2-bounds.width/2, 200.f-bounds.height/2);
 }

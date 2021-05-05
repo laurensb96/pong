@@ -3,7 +3,11 @@
 
 #include <SFML/Graphics.hpp>
 
-#define NUM_OF_RACKETS 2
+#define WINDOW_WIDTH 800.f
+#define WINDOW_HEIGHT 600.f
+
+#define NUM_OF_PLAYERS 2
+
 #define RACKET_LENGTH 150.f
 #define RACKET_WIDTH 20.f
 #define BALL_RADIUS 15.f
